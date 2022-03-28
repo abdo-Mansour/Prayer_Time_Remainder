@@ -1,14 +1,12 @@
-#Author: Abdulrahman Mohammed Fawzi
+#Authors: Abdulrahman Mohammed Fawzi
 #Project Name: Prayer Reminder 
 
 
 '''
 This project should remind the user of the prayer time and shutdown/sleep his or her PC 
 to motivate them to pray in time.
-
 API used:
     to get the current prayer times: https://aladhan.com/prayer-times-api#GetCalendarByCitys
-
 Libraries you might use:
     for time remindrs: https://schedule.readthedocs.io/en/stable/index.html
         background: https://schedule.readthedocs.io/en/stable/background-execution.html
@@ -18,7 +16,6 @@ Libraries you might use:
     to make the pc go to sleep: https://stackoverflow.com/questions/37009777/how-to-make-a-windows-10-computer-go-to-sleep-with-a-python-script 
     for user locatio https://geocoder.readthedocs.io/api.html#house-addresses
     getting api requests using the requests library
-
 ''''' 
 
 from tkinter import *
@@ -28,6 +25,7 @@ import json
 import schedule
 import time
 import os
+import psutil #to detect type of operating system
 
 
 #locate the user
@@ -58,7 +56,6 @@ def popupmsg(msg):
     '''
     This function pop up a small window to remind the user to pray.\n
     takes as input the message you want to output.
-
     '''
     popup = Tk()
     popup.wm_title("Prayer Time!")
@@ -78,7 +75,10 @@ def prayer_time():
     
     if(force_sleep):
         time.sleep(time_to_force_sleep)
-        os.system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
+        if psutil.WINDOWS:
+            os.system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
+        elif psutil.LINUX:
+            os.system("systemctl suspend")
 
     
 #prayer times
@@ -93,7 +93,3 @@ schedule.every().day.at(prayers['Isha']).do(prayer_time)
 while True:
     schedule.run_pending()
     time.sleep(1)
-
-
-
-
